@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Icons</title>
+</head>
+<body>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <script>
+        function generateIcon(size, text) {
+            const canvas = document.getElementById('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#1A237E');    // ember-dark
+            gradient.addColorStop(0.5, '#C2185B');  // ember-medium
+            gradient.addColorStop(1, '#008B8B');    // aqua-dark
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Add text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size/2}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, size/2, size/2);
+
+            return canvas.toDataURL();
+        }
+
+        // Generate icons
+        const sizes = [16, 32, 64, 192, 512];
+        sizes.forEach(size => {
+            const link = document.createElement('a');
+            link.download = size === 16 ? 'favicon.ico' : `logo${size}.png`;
+            link.href = generateIcon(size, 'SM');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+// Version temporaire pour tester les modifications
+interface CalendarFormData {
+  name: string;
+  startDate: string;
+  endDate: string;
+  country: string;
+  languages: string[];  // Changé de language à languages
+  targetAudience: string;
+  brandId: string;
+  goals: string[];
+  frequency: 'daily' | 'weekly' | 'monthly';
+  contentPlan: {
+    frequency: {
+      facebook: number;
+      instagram: number;
+      twitter: number;
+      linkedin: number;
+      tiktok: number;
+    };
+    preferredTimes: {
+      facebook: string[];
+      instagram: string[];
+      twitter: string[];
+      linkedin: string[];
+      tiktok: string[];
+    };
+    contentMix: {
+      type: string;
+      percentage: number;
+    }[];
+  };
+  generationSettings: {
+    tone: string;
+    themes: string[];
+    keywords: string[];
+    contentLength: {
+      min: number;
+      max: number;
+    };
+    imageStyle: string[];
+  };
+}
+
+// Exemple de la nouvelle section de langues
+const LanguageSection = ({ country, languages, onChange }) => {
+  const selectedCountry = countries.find(c => c.code === country);
+  if (!selectedCountry) return null;
+
+  const allLanguages = [
+    { code: selectedCountry.languages.primary, name: selectedCountry.languageNames.primary },
+    ...(selectedCountry.languages.secondary?.map((code, index) => ({
+      code,
+      name: selectedCountry.languageNames.secondary?.[index] || code
+    })) || [])
+  ];
+
+  return (
+    <div className="space-y-2 glass-panel p-4">
+      {allLanguages.map(lang => {
+        const dialectInfo = selectedCountry.dialectInfo?.[lang.code];
+        return (
+          <label key={lang.code} className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={languages.includes(lang.code)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onChange([...languages, lang.code]);
+                } else {
+                  onChange(languages.filter(l => l !== lang.code));
+                }
+              }}
+              className="form-checkbox h-4 w-4 text-[#53dfb2] rounded focus:ring-[#53dfb2]"
+            />
+            <span className="text-white">
+              {lang.name}
+              {dialectInfo && (
+                <span className="ml-2 text-sm text-white/60">
+                  ({dialectInfo.description})
+                </span>
+              )}
+            </span>
+          </label>
+        );
+      })}
+    </div>
+  );
+};
+
+// Validation modifiée
+const validateForm = (formData: CalendarFormData) => {
+  if (!formData.brandId) {
+    throw new Error('La marque est requise');
+  }
+  if (!formData.country) {
+    throw new Error('Le pays cible est requis');
+  }
+  if (formData.languages.length === 0) {
+    throw new Error('Au moins une langue est requise');
+  }
+  // ... reste de la validation
+};
+
+// Modification du handleGenerate
+const handleGenerate = async () => {
+  // ...
+  const calendarData = {
+    ...formData,
+    startDate: new Date(formData.startDate),
+    endDate: new Date(formData.endDate),
+    brandId: brand._id,
+    targetCountry: formData.country,
+    targetLanguages: formData.languages,  // Changé de targetLanguage à targetLanguages
+    // ...
+  };
+  // ...
+};
